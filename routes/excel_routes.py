@@ -4,7 +4,6 @@ from utils.security import get_current_user
 import os
 
 router = APIRouter(
-    prefix="/excel",
     tags=["Excel"]
 )
 
