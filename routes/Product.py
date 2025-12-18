@@ -6,7 +6,6 @@ from database import db
 from models.product_model import product_model
 from schemas.product_schema import ProductCreateSchema, ProductUpdateSchema
 from utils.security import get_current_user, admin_or_super_admin
-from utils.excel_utils import append_product_to_excel
 products_collection = db["products"]
 categories_collection = db["categories"]
 
@@ -45,13 +44,6 @@ def add_product(
         )
     )
 
-    # ✅ APPEND TO EXCEL
-    append_product_to_excel({
-        "name": data.name,
-        "category": category["name"],
-        "barcode": barcode,
-        "selling_price": data.selling_price
-    })
 
     return {
         "message": "Product added successfully",
