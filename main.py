@@ -14,7 +14,7 @@ app = FastAPI(title="Retail Stock Management Backend")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Next.js URL
+    allow_origins=["https://pos-management-rosy.vercel.app/"],  # Next.js URL
     allow_credentials=True,
     allow_methods=["*"],   # GET, POST, PUT, DELETE, OPTIONS
     allow_headers=["*"],   # Authorization, Content-Type
