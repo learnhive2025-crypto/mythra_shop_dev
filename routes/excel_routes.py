@@ -10,7 +10,7 @@ router = APIRouter(
 FILE_PATH = "product_barcodes.xlsx"
 
 @router.get("/download-products")
-def download_products_excel(user=Depends(get_current_user)):
+def download_products_excel():
     if not os.path.exists(FILE_PATH):
         return {"error": "Excel file not found"}
 
