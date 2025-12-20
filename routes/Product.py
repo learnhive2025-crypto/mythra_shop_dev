@@ -74,35 +74,35 @@ def list_products(user=Depends(get_current_user)):
 
     return result
 
-# -------------------------------------------------
-# UPDATE PRODUCT
-# Access: Super Admin, Admin ONLY
-# -------------------------------------------------
 @router.put("/update/{product_id}")
 def update_product(
     product_id: str,
     data: ProductUpdateSchema,
     user=Depends(admin_or_super_admin)
 ):
-    update = products_collection.update_one(
-        {"_id": ObjectId(product_id)},
-        {
-            "$set": {
-                "name": data.name,
-                "category_id": data.category_id,
-                "purchase_price": data.purchase_price,
-                "selling_price": data.selling_price,
-                "stock_qty": data.stock_qty,
-                "is_active": data.is_active,
-                "updated_at": datetime.utcnow()
-            }
-        }
-    )
 
-    if update.matched_count == 0:
+    product = products_collection.find_one({"_id": ObjectId(product_id), "is_active": True})
+
+    if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
+    update_data = {
+        "name": data.name,
+        "category_id": data.category_id,
+        "purchase_price": data.purchase_price,
+        "selling_price": data.selling_price,
+        "stock_qty": data.stock_qty,
+        "is_active": data.is_active,
+        "updated_at": datetime.utcnow()
+    }
+
+    products_collection.update_one(
+        {"_id": ObjectId(product_id)},
+        {"$set": update_data}
+    )
+
     return {"message": "Product updated successfully"}
+
 
 # -------------------------------------------------
 # DELETE PRODUCT (SOFT DELETE)

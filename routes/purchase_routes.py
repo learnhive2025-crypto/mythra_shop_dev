@@ -45,7 +45,6 @@ def add_purchase(
         total_amount = 0
 
         for item in data.items:
-            # ✅ Validate ObjectId
             try:
                 product_oid = ObjectId(item.product_id)
             except InvalidId:
@@ -65,7 +64,6 @@ def add_purchase(
                     detail="Product not found"
                 )
 
-            # ✅ STOCK IN
             products_collection.update_one(
                 {"_id": product_oid},
                 {"$inc": {"stock_qty": item.qty}}
@@ -90,7 +88,6 @@ def add_purchase(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Purchase Error: {str(e)}")
         raise HTTPException(
             status_code=400,
             detail=f"Purchase failed: {str(e)}"
@@ -113,7 +110,7 @@ def list_purchases(user=Depends(admin_or_super_admin)):
     ]
 
 # -------------------------------------------------
-# GET SINGLE PURCHASE
+# GET PURCHASE
 # -------------------------------------------------
 @router.get("/{purchase_id}")
 def get_purchase(purchase_id: str, user=Depends(admin_or_super_admin)):
@@ -174,6 +171,17 @@ def update_purchase(
                 detail=f"Invalid product id: {item.product_id}"
             )
 
+        product = products_collection.find_one({
+            "_id": product_oid,
+            "is_active": True
+        })
+
+        if not product:
+            raise HTTPException(
+                status_code=404,
+                detail="Product not found"
+            )
+
         products_collection.update_one(
             {"_id": product_oid},
             {"$inc": {"stock_qty": item.qty}}
@@ -197,7 +205,7 @@ def update_purchase(
     return {"message": "Purchase updated successfully"}
 
 # -------------------------------------------------
-# DELETE PURCHASE (SOFT DELETE)
+# DELETE PURCHASE
 # -------------------------------------------------
 @router.delete("/delete/{purchase_id}")
 def delete_purchase(
