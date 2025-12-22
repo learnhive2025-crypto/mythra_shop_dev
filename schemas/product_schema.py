@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 class ProductCreateSchema(BaseModel):
     name: str = Field(..., example="Plastic Bucket")
@@ -9,12 +10,12 @@ class ProductCreateSchema(BaseModel):
 
 
 class ProductUpdateSchema(BaseModel):
-    name: str
-    category_id: str
-    purchase_price: float
-    selling_price: float
-    stock_qty: int
-    is_active: bool
+    name: Optional[str] = None
+    category_id: Optional[str] = None
+    purchase_price: Optional[float] = None
+    selling_price: Optional[float] = None
+    stock_qty: Optional[int] = None
+    is_active: Optional[bool] = None
 
 class ProductResponseSchema(BaseModel):
     id: str

@@ -18,3 +18,4 @@ Pillow
 cryptography
 certifi
 truststore
+google-generativeai

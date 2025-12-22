@@ -10,6 +10,7 @@ categories_collection = db["categories"]
 products_collection = db["products"]
 sales_collection = db["sales"]
 purchases_collection = db["purchases"]
+expenses_collection = db["expenses"]
 
 router = APIRouter(
     prefix="/dashboard",
@@ -32,6 +33,14 @@ def dashboard_summary(user=Depends(get_current_user)):
     total_sales = sales_collection.count_documents({})
     total_revenue = sum(s.get("total_amount", 0) for s in sales_collection.find())
 
+    # Calculate total expenses
+    pipeline = [
+        {"$match": {"is_active": True}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]
+    expense_result = list(expenses_collection.aggregate(pipeline))
+    total_expenses = expense_result[0]["total"] if expense_result else 0
+
     return {
         "admins": total_admins,
         "staff": total_staff,
@@ -39,7 +48,8 @@ def dashboard_summary(user=Depends(get_current_user)):
         "products": total_products,
         "purchase_qty": purchase_qty,
         "total_sales": total_sales,
-        "total_revenue": total_revenue
+        "total_revenue": total_revenue,
+        "total_expenses": total_expenses
     }
 
 

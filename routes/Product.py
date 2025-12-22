@@ -86,15 +86,13 @@ def update_product(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    update_data = {
-        "name": data.name,
-        "category_id": data.category_id,
-        "purchase_price": data.purchase_price,
-        "selling_price": data.selling_price,
-        "stock_qty": data.stock_qty,
-        "is_active": data.is_active,
-        "updated_at": datetime.utcnow()
-    }
+    # Only update fields that are provided (not None)
+    update_data = {k: v for k, v in data.dict().items() if v is not None}
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    update_data["updated_at"] = datetime.utcnow()
 
     products_collection.update_one(
         {"_id": ObjectId(product_id)},

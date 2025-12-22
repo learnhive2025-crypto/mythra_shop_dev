@@ -16,6 +16,8 @@ from routes.export_routes import router as export_router
 from routes.excel_routes import router as excel_router
 from routes.purchase_analytics import router as purchase_analytics_router
 from routes.expense_routes import router as expense_router
+from routes.ai_suggestion_routes import router as ai_suggestion_router
+
 api_router = APIRouter()
 
 
@@ -35,3 +37,4 @@ api_router.include_router(profit_router)
 api_router.include_router(analytics_router)
 api_router.include_router(export_router)
 api_router.include_router(expense_router)
+api_router.include_router(ai_suggestion_router)
