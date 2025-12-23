@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from database import db
+from bson import ObjectId
 from utils.security import get_current_user
 from collections import defaultdict
 
@@ -24,7 +25,7 @@ def product_wise_profit(user=Depends(get_current_user)):
     total_profit = 0
 
     for product_id, sold_qty in sold_qty_map.items():
-        product = products_collection.find_one({"_id": product_id})
+        product = products_collection.find_one({"_id": ObjectId(product_id)})
         if not product:
             continue
 

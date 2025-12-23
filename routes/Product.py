@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from bson import ObjectId
 from datetime import datetime
-from utils.barcode_utils import generate_barcode
+from utils.barcode_utils import generate_unique_barcode
 from database import db
 from models.product_model import product_model
 from schemas.product_schema import ProductCreateSchema, ProductUpdateSchema
@@ -31,7 +31,7 @@ def add_product(
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
 
-    barcode = generate_barcode()
+    barcode = generate_unique_barcode(products_collection)
 
     products_collection.insert_one(
         product_model(
@@ -125,6 +125,25 @@ def delete_product(
         raise HTTPException(status_code=404, detail="Product not found")
 
     return {"message": "Product deleted successfully"}
+
+# -------------------------------------------------
+# LIST PRODUCTS WITH BARCODE AND QTY
+# Access: Super Admin, Admin, Staff
+# Returns: Product name, barcode, and quantity
+# -------------------------------------------------
+@router.get("/barcode-list")
+def list_products_barcode_qty(user=Depends(get_current_user)):
+    result = []
+    
+    for product in products_collection.find({"is_active": True}):
+        result.append({
+            "id": str(product["_id"]),
+            "name": product["name"],
+            "barcode": product["barcode"],
+            "stock_qty": product["stock_qty"]
+        })
+    
+    return result
 
 @router.get("/by-barcode/{barcode}")
 def get_product_by_barcode(barcode: str, user=Depends(get_current_user)):
